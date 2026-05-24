@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Garvit Chawla — Visiting Card</title>
+    <style>
+      :root{--bg:#0f172a;--card:#0b1220;--accent:#7c3aed;--accent2:#2563eb;--muted:#94a3b8;--glass:rgba(255,255,255,0.03);--sig-stroke:#e6eef8}
+      /* Light theme variables applied when body.light-theme is present */
+      .light-theme{--bg:#f8fafc;--card:linear-gradient(180deg,#ffffff,#fbfbfd);--accent:#7c3aed;--accent2:#2563eb;--muted:#475569;--glass:rgba(2,6,23,0.03);--sig-stroke:#0f172a}
+      *{box-sizing:border-box}
+      html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(180deg,#071021 0%,#071828 60%);color:var(--sig-stroke);transition:background-color 420ms ease,color 420ms ease}
+      /* when light theme is active, use lighter page background */
+      .light-theme html,.light-theme body{background:var(--bg);color:var(--sig-stroke)}
+      .wrap{min-height:100%;display:flex;align-items:center;justify-content:center;padding:32px}
+
+      /* Card container */
+      .scene{width:360px;perspective:1200px}
+      /* theme toggle */
+      .theme-toggle{position:absolute;right:28px;top:28px;background:transparent;border:0;padding:8px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;backdrop-filter:blur(6px);transition:transform 300ms, background-color 300ms}
+      .theme-toggle svg{width:22px;height:22px;display:block}
+      .theme-toggle:focus{outline:2px solid rgba(124,58,237,0.24)}
+      .card{width:100%;height:220px;position:relative;transform-style:preserve-3d;transition:transform 600ms cubic-bezier(.2,.9,.25,1);cursor:pointer}
+      .card,.face{transition:background 420ms ease,color 420ms ease,border-color 420ms ease}
+      .card.is-flipped{transform:rotateY(180deg)}
+
+      .face{position:absolute;inset:0;border-radius:14px;overflow:hidden;backface-visibility:hidden;display:flex;flex-direction:column}
+      .front{background:linear-gradient(135deg, rgba(124,58,237,0.12), rgba(37,99,235,0.08)),var(--card);border:1px solid rgba(255,255,255,0.04);padding:18px}
+      .back{background:linear-gradient(135deg, rgba(37,99,235,0.06), rgba(124,58,237,0.06)),linear-gradient(0deg, rgba(255,255,255,0.02), rgba(255,255,255,0.02));transform:rotateY(180deg);border:1px solid rgba(255,255,255,0.03);padding:18px}
+
+      /* Front layout */
+      .brand{display:flex;align-items:center;gap:12px}
+      .avatar{width:62px;height:62px;border-radius:10px;background:linear-gradient(180deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:700;color:white;font-size:20px;box-shadow:0 6px 18px rgba(2,6,23,0.6)}
+      .name{font-size:1.15rem;font-weight:700;margin:0}
+      .role{font-size:0.88rem;color:var(--muted);margin-top:4px}
+
+      .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+      .pill{background:var(--glass);padding:8px 10px;border-radius:999px;font-size:0.86rem;color:var(--muted);border:1px solid rgba(255,255,255,0.02)}
+
+      .spacer{flex:1}
+
+      /* Signature area on back */
+      .sig-wrap{display:flex;align-items:center;justify-content:center;flex-direction:column;height:100%}
+      .sign-title{color:var(--muted);font-size:0.85rem;margin-bottom:8px}
+      .signature{width:260px;height:110px}
+      svg path{stroke:var(--sig-stroke);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:800;stroke-dashoffset:800;animation:sign 3s ease forwards;transition:stroke 420ms ease}
+      @keyframes sign{to{stroke-dashoffset:0}}
+
+      .contact-list{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+      .contact-item{display:flex;gap:10px;align-items:center;color:var(--muted);font-size:0.9rem}
+      .hint{font-size:0.82rem;color:#9fb0cf;margin-top:10px;text-align:center}
+
+      /* small screens */
+      @media (max-width:420px){.scene{width:320px}.signature{width:220px;height:96px}}
+    </style>
+  </head>
+    <body class="light-theme">
+    <div class="wrap">
+      <button id="themeToggle" class="theme-toggle" aria-label="Toggle light theme" title="Toggle light theme">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <g id="icon-sun">
+            <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.6"/>
+            <g stroke="currentColor" stroke-width="1.4">
+              <path d="M12 2v2"/>
+              <path d="M12 20v2"/>
+              <path d="M4 12H2"/>
+              <path d="M22 12h-2"/>
+              <path d="M4.9 4.9L3.5 3.5"/>
+              <path d="M20.5 20.5l-1.4-1.4"/>
+              <path d="M20.5 3.5l-1.4 1.4"/>
+              <path d="M4.9 19.1l-1.4 1.4"/>
+            </g>
+          </g>
+        </svg>
+      </button>
+      
+      <div class="scene" id="scene">
+        <div class="card" id="card" role="button" tabindex="0" aria-pressed="false" aria-label="Visiting card. Click or swipe to flip.">
+
+          <!-- FRONT -->
+          <div class="face front">
+            <div class="brand">
+              <div class="avatar">GC</div>
+              <div>
+                <h3 class="name">Garvit Chawla</h3>
+                <div class="role">Full Stack Developer • AI enthusiast</div>
+              </div>
+              <div class="spacer"></div>
+              <div style="text-align:right;color:var(--muted);font-size:0.82rem">Sri Ganganagar, Rajasthan</div>
+            </div>
+
+            <div class="meta">
+              <div class="pill">garvitchawla.office@gmail.com</div>
+              <div class="pill">+91 9660665666</div>
+              <div class="pill">github.com/garvit0080</div>
+              <div class="pill">linkedin.com/in/garvit-chawla</div>
+            </div>
+
+            <div style="margin-top:auto;display:flex;align-items:center;justify-content:space-between">
+              <div style="color:var(--muted);font-size:0.82rem">MERN • React • TypeScript</div>
+              <div style="font-size:0.78rem;color:var(--muted)">Tap / Swipe →</div>
+            </div>
+          </div>
+
+          <!-- BACK -->
+          <div class="face back">
+            <div class="sig-wrap">
+              <div class="sign-title">Signed — Garvit</div>
+
+              <div class="signature" aria-hidden="true">
+                <svg viewBox="0 0 520 200" preserveAspectRatio="xMidYMid meet" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                  <!-- Decorative signature-like path -->
+                  <path d="M20 140 C80 40 150 40 200 120 C240 180 300 60 360 110 C410 150 470 100 500 120" />
+                </svg>
+              </div>
+
+              <div class="contact-list">
+                <div class="contact-item">📧 garvitchawla.office@gmail.com</div>
+                <div class="contact-item">📞 +91 9660665666</div>
+                <div class="contact-item">🔗 github.com/garvit0080</div>
+              </div>
+
+              <div class="hint">Click or swipe left/right to flip again</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Flip logic: click, keyboard, swipe
+      (function(){
+        const card = document.getElementById('card');
+        let startX = 0; let deltaX = 0; let dragging = false;
+
+        function setFlipped(fl){
+          card.classList.toggle('is-flipped', !!fl);
+          card.setAttribute('aria-pressed', !!fl);
+        }
+
+        card.addEventListener('click', ()=> setFlipped(!card.classList.contains('is-flipped')));
+        card.addEventListener('keydown', (e)=>{ if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setFlipped(!card.classList.contains('is-flipped')); } });
+
+        // touch events for swipe
+        card.addEventListener('touchstart', (e)=>{ startX = e.touches[0].clientX; dragging=true; }, {passive:true});
+        card.addEventListener('touchmove', (e)=>{ if(!dragging) return; deltaX = e.touches[0].clientX - startX; }, {passive:true});
+        card.addEventListener('touchend', ()=>{ if(!dragging) return; if(Math.abs(deltaX) > 40) setFlipped(!card.classList.contains('is-flipped')); startX=0; deltaX=0; dragging=false; });
+
+        // mouse drag for desktop swipe-like behavior
+        card.addEventListener('mousedown', (e)=>{ startX = e.clientX; dragging=true; });
+        window.addEventListener('mousemove', (e)=>{ if(!dragging) return; deltaX = e.clientX - startX; });
+        window.addEventListener('mouseup', ()=>{ if(!dragging) return; if(Math.abs(deltaX) > 60) setFlipped(!card.classList.contains('is-flipped')); startX=0; deltaX=0; dragging=false; });
+
+        // Prevent accidental text selection while dragging
+        card.addEventListener('dragstart', (e)=> e.preventDefault());
+
+        // Small accessibility: allow double-tap to toggle on touch devices
+        let lastTap = 0;
+        card.addEventListener('touchend', function(e){ const now = Date.now(); if(now - lastTap < 300){ setFlipped(!card.classList.contains('is-flipped')); } lastTap = now; });
+      })();
+
+      // Theme toggle: persist and animate transition
+      (function(){
+        const toggle = document.getElementById('themeToggle');
+        const body = document.body;
+
+        function applyLight(enabled){
+          if(enabled) body.classList.add('light-theme'); else body.classList.remove('light-theme');
+          toggle.style.transform = enabled ? 'rotate(20deg) scale(1.05)' : 'rotate(0deg) scale(1)';
+        }
+
+        const stored = localStorage.getItem('visiting_card_theme');
+        const defaultLight = true; // force white theme by default
+        applyLight(stored ? stored === 'light' : defaultLight);
+
+        toggle.addEventListener('click', ()=>{
+          const isLight = body.classList.toggle('light-theme');
+          localStorage.setItem('visiting_card_theme', isLight ? 'light' : 'dark');
+          applyLight(isLight);
+          const sig = document.querySelector('svg path');
+          if(sig){ sig.style.transition = 'none'; sig.style.strokeDashoffset = getComputedStyle(sig).strokeDashoffset; void sig.getBoundingClientRect(); sig.style.transition = ''; sig.style.strokeDashoffset = 0; }
+        });
+      })();
+    </script>
+  </body>
+</html>
