@@ -185,28 +185,81 @@ body.dark .back-content{background:#ffffff; color:var(--text-main)}
   z-index: -1;
 }
 
-/* rotate handle visible on touch devices */
-.rotate-handle{
-  position: absolute;
-  right: 14px;
+/* install prompt banner */
+.install-prompt{
+  position: fixed;
+  left: 50%;
   bottom: 14px;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background: rgba(15,23,42,0.04);
-  border: 1px solid rgba(15,23,42,0.06);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
-  font-size:18px;
-  user-select:none;
-  -webkit-user-select:none;
-  touch-action:none;
+  transform: translateX(-50%) translateY(12px);
+  display: none;
+  align-items: center;
+  gap: 10px;
+  max-width: calc(100vw - 28px);
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.82);
+  border: 1px solid rgba(15,23,42,0.08);
+  box-shadow: 0 12px 34px rgba(0,0,0,0.16);
+  backdrop-filter: blur(18px);
+  z-index: 60;
 }
 
-@media (hover: hover) and (pointer: fine){
-  .rotate-handle{ display:none; }
+.install-prompt.show{
+  display: flex;
+  transform: translateX(-50%) translateY(0);
+}
+
+.install-prompt .prompt-copy{
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.install-prompt .prompt-title{
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.install-prompt .prompt-subtitle{
+  font-size: 12px;
+  color: #475569;
+}
+
+.install-prompt .prompt-actions{
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.install-prompt button{
+  border: 0;
+  border-radius: 999px;
+  padding: 9px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.install-prompt .install-action{
+  background: var(--accent);
+  color: #fff;
+}
+
+.install-prompt .dismiss-action{
+  background: rgba(15,23,42,0.06);
+  color: var(--text-main);
+}
+
+body.dark .install-prompt{
+  background: rgba(15,23,42,0.82);
+  border-color: rgba(148,163,184,0.22);
+}
+
+body.dark .install-prompt .prompt-subtitle,
+body.dark .install-prompt .dismiss-action{
+  color: #cbd5e1;
 }
 
 /* mobile first-time hint */
@@ -336,16 +389,22 @@ body.dark .back-content{background:#ffffff; color:var(--text-main)}
           </div>
         </div>
 
-          <!-- Add to Home Screen button (shown when install prompt available) -->
-          <button id="installBtn" style="position:fixed;right:14px;bottom:14px;z-index:60;display:none;border-radius:10px;padding:8px 10px;border:1px solid var(--accent-opaque);background:var(--accent);color:#fff;font-size:13px;box-shadow:0 6px 18px rgba(0,0,0,0.12);">Add to Home Screen</button>
+          <!-- Add to Home Screen prompt -->
+          <div class="install-prompt" id="installPrompt" aria-live="polite">
+            <div class="prompt-copy">
+              <div class="prompt-title">Add to Home Screen</div>
+              <div class="prompt-subtitle">Install this card so it works like an app and stays available offline.</div>
+            </div>
+            <div class="prompt-actions">
+              <button class="dismiss-action" id="dismissInstall" type="button">Not now</button>
+              <button class="install-action" id="installBtn" type="button">Install</button>
+            </div>
+          </div>
       </div>
     </div>
 
-      <!-- UI: rotate handle (flip button moved inside front) -->
-      <div class="rotate-handle" id="rotateHandle" aria-hidden="true">Rotate</div>
-
       <div class="mobile-hint" id="mobileHint" role="status" aria-live="polite">
-        Drag the round handle to rotate. Double-tap the card to flip.
+        Drag the card to rotate. Double-tap to flip.
         <button class="hint-close" id="hintClose">Got it</button>
       </div>
 
@@ -458,7 +517,6 @@ document.addEventListener('keydown', (ev)=>{
 });
 
 // Rotate handle (touch-friendly): drag the handle to rotate the card
-const rotateHandle = document.getElementById('rotateHandle');
 let isHandleDown = false;
 let handleStartX = 0, handleStartY = 0;
 
@@ -486,12 +544,8 @@ function onHandleUp(e){
   isHandleDown = false;
 }
 
-rotateHandle.addEventListener('mousedown', onHandleDown);
 document.addEventListener('mousemove', onHandleMove);
 document.addEventListener('mouseup', onHandleUp);
-rotateHandle.addEventListener('touchstart', onHandleDown, {passive:false});
-document.addEventListener('touchmove', onHandleMove, {passive:false});
-document.addEventListener('touchend', onHandleUp);
 
 // Mobile hint: show once for touch devices, persist dismissal in localStorage
 const mobileHint = document.getElementById('mobileHint');
@@ -514,8 +568,6 @@ function showHintIfNeeded(){
 }
 
 hintClose && hintClose.addEventListener('click', ()=> hideHint(true));
-// hide when user interacts with controls
-rotateHandle && rotateHandle.addEventListener('touchstart', ()=> hideHint(true), {passive:true});
 showHintIfNeeded();
 
 // Dark mode removed — UI is now single-theme
@@ -566,7 +618,7 @@ vcardBtn && vcardBtn.addEventListener('click', ()=>{
     'BEGIN:VCARD',
     'VERSION:3.0',
     'FN:Garvit Chawla',
-    'TITLE:Full Stack Developer',
+    'TITLE:Software Developer',
     'EMAIL;TYPE=INTERNET:garvitchawla.office@gmail.com',
     'TEL;TYPE=CELL:+919660665666',
     
@@ -604,7 +656,9 @@ vcardBtn && vcardBtn.addEventListener('click', ()=>{
 
 // --- PWA: Service Worker registration + install prompt handling ---
 let deferredPrompt = null;
+const installPrompt = document.getElementById('installPrompt');
 const installBtn = document.getElementById('installBtn');
+const dismissInstall = document.getElementById('dismissInstall');
 
 // Register service worker if supported
 if('serviceWorker' in navigator){
@@ -616,21 +670,29 @@ if('serviceWorker' in navigator){
 window.addEventListener('beforeinstallprompt', (e)=>{
   e.preventDefault();
   deferredPrompt = e; // save for later
-  // show install UI
-  if(installBtn){
-    installBtn.style.display = 'block';
+  // show the install banner
+  if(installPrompt){
+    installPrompt.classList.add('show');
   }
 });
 
 installBtn && installBtn.addEventListener('click', async ()=>{
   if(!deferredPrompt) return;
-  installBtn.style.display = 'none';
   deferredPrompt.prompt();
   const choice = await deferredPrompt.userChoice;
   if(choice && choice.outcome){
     console.log('User choice:', choice.outcome);
   }
+  if(installPrompt){
+    installPrompt.classList.remove('show');
+  }
   deferredPrompt = null;
+});
+
+dismissInstall && dismissInstall.addEventListener('click', ()=>{
+  if(installPrompt){
+    installPrompt.classList.remove('show');
+  }
 });
 
 // optional: show offline notice when navigator goes offline
