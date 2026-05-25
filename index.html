@@ -190,17 +190,10 @@ body.dark .back-content{background:#ffffff; color:var(--text-main)}
   position: fixed;
   left: 50%;
   bottom: 14px;
-  transform: translateX(-50%) translateY(12px);
+  transform: translateX(-50%) translateY(10px);
   display: none;
   align-items: center;
-  gap: 10px;
-  max-width: calc(100vw - 28px);
-  padding: 12px 14px;
-  border-radius: 16px;
-  background: rgba(255,255,255,0.82);
-  border: 1px solid rgba(15,23,42,0.08);
-  box-shadow: 0 12px 34px rgba(0,0,0,0.16);
-  backdrop-filter: blur(18px);
+  justify-content: center;
   z-index: 60;
 }
 
@@ -209,57 +202,23 @@ body.dark .back-content{background:#ffffff; color:var(--text-main)}
   transform: translateX(-50%) translateY(0);
 }
 
-.install-prompt .prompt-copy{
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
-.install-prompt .prompt-title{
+.install-prompt button{
+  border: 1px solid rgba(255,255,255,0.35);
+  border-radius: 999px;
+  padding: 10px 18px;
   font-size: 13px;
   font-weight: 700;
-  color: var(--text-main);
-}
-
-.install-prompt .prompt-subtitle{
-  font-size: 12px;
-  color: #475569;
-}
-
-.install-prompt .prompt-actions{
-  display: flex;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-.install-prompt button{
-  border: 0;
-  border-radius: 999px;
-  padding: 9px 12px;
-  font-size: 12px;
-  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
   cursor: pointer;
-}
-
-.install-prompt .install-action{
   background: var(--accent);
   color: #fff;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
 
-.install-prompt .dismiss-action{
-  background: rgba(15,23,42,0.06);
-  color: var(--text-main);
-}
-
-body.dark .install-prompt{
-  background: rgba(15,23,42,0.82);
-  border-color: rgba(148,163,184,0.22);
-}
-
-body.dark .install-prompt .prompt-subtitle,
-body.dark .install-prompt .dismiss-action{
-  color: #cbd5e1;
+.install-prompt button:disabled{
+  opacity: 0.55;
+  cursor: default;
 }
 
 /* mobile first-time hint */
@@ -391,14 +350,7 @@ body.dark .install-prompt .dismiss-action{
 
           <!-- Add to Home Screen prompt -->
           <div class="install-prompt" id="installPrompt" aria-live="polite">
-            <div class="prompt-copy">
-              <div class="prompt-title">Add to Home Screen</div>
-              <div class="prompt-subtitle">Install this card so it works like an app and stays available offline.</div>
-            </div>
-            <div class="prompt-actions">
-              <button class="dismiss-action" id="dismissInstall" type="button">Not now</button>
-              <button class="install-action" id="installBtn" type="button">Install</button>
-            </div>
+            <button class="install-action" id="installBtn" type="button">vcrd</button>
           </div>
       </div>
     </div>
@@ -658,7 +610,6 @@ vcardBtn && vcardBtn.addEventListener('click', ()=>{
 let deferredPrompt = null;
 const installPrompt = document.getElementById('installPrompt');
 const installBtn = document.getElementById('installBtn');
-const dismissInstall = document.getElementById('dismissInstall');
 
 // Register service worker if supported
 if('serviceWorker' in navigator){
@@ -687,12 +638,7 @@ installBtn && installBtn.addEventListener('click', async ()=>{
     installPrompt.classList.remove('show');
   }
   deferredPrompt = null;
-});
-
-dismissInstall && dismissInstall.addEventListener('click', ()=>{
-  if(installPrompt){
-    installPrompt.classList.remove('show');
-  }
+  installBtn.disabled = true;
 });
 
 // optional: show offline notice when navigator goes offline
