@@ -49,11 +49,12 @@ body {
 
 /* SCENE */
 .scene {
-  height: 100%;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
   perspective: 1400px;
+  padding: 20px;
 }
 
 /* CARD */
@@ -64,6 +65,8 @@ body {
   transform-style: preserve-3d;
   transition: transform 280ms cubic-bezier(.2,.8,.2,1);
   touch-action: none;
+  position: relative;
+  transform-origin: center center;
 }
 
 /* SIDES */
@@ -161,6 +164,42 @@ body {
   opacity: 0.15;
   z-index: -1;
 }
+
+/* rotate handle visible on touch devices */
+.rotate-handle{
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  font-size:18px;
+  user-select:none;
+  -webkit-user-select:none;
+  touch-action:none;
+}
+
+.flip-btn{
+  position:absolute;
+  left:14px;
+  top:14px;
+  padding:6px 10px;
+  border-radius:12px;
+  background: rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.06);
+  color: #fff;
+  font-size:13px;
+}
+
+@media (hover: hover) and (pointer: fine){
+  .rotate-handle{ display:none; }
+}
 </style>
 </head>
 
@@ -210,6 +249,10 @@ body {
       </div>
     </div>
 
+      <!-- UI: flip button + rotate handle -->
+      <button class="flip-btn" id="flipBtn" aria-label="Flip card">Flip</button>
+      <div class="rotate-handle" id="rotateHandle" aria-hidden="true">⤾</div>
+
   </div>
 </div>
 
@@ -222,6 +265,13 @@ let startX = 0, startY = 0;
 let baseRotX = 0, baseRotY = 0;
 let pointerDownTime = 0;
 let movedDuringPointer = false;
+// track current rotation so inline transforms can be combined with flip
+let currentRotX = 0, currentRotY = 0;
+
+function updateCardTransform(){
+  const flipPrefix = card.classList.contains('is-flipped') ? 'rotateY(180deg) ' : '';
+  card.style.transform = `${flipPrefix}rotateX(${currentRotX}deg) rotateY(${currentRotY}deg)`;
+}
 
 function onPointerDown(e){
   isPointerDown = true;
@@ -229,9 +279,8 @@ function onPointerDown(e){
   startX = p.clientX; startY = p.clientY;
   movedDuringPointer = false;
   pointerDownTime = Date.now();
-  // read current rotation from transform if present
-  const style = getComputedStyle(card).transform;
-  baseRotX = 0; baseRotY = 0;
+  // use current rotation as base so rotations are preserved
+  baseRotX = currentRotX; baseRotY = currentRotY;
   if(style && style !== 'none'){
     // parse matrix to approx rotations (best-effort)
     // fallback to zero to keep behavior simple
@@ -246,15 +295,11 @@ function onPointerMove(e){
   if(Math.hypot(dx, dy) > 6) movedDuringPointer = true;
   const rotY = baseRotY + dx * 0.15; // sensitivity
   const rotX = baseRotX - dy * 0.12;
-  card.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+  currentRotX = rotX; currentRotY = rotY;
+  updateCardTransform();
 }
 
 function onPointerUp(){
-  const duration = Date.now() - pointerDownTime;
-  // treat as a tap if short and there was little movement
-  if(!movedDuringPointer && duration < 300){
-    card.classList.toggle('is-flipped');
-  }
   isPointerDown = false;
 }
 
@@ -266,6 +311,50 @@ document.addEventListener('mouseup', onPointerUp);
 document.addEventListener('touchstart', onPointerDown, {passive:true});
 document.addEventListener('touchmove', onPointerMove, {passive:true});
 document.addEventListener('touchend', onPointerUp);
+
+// Flip button (explicit control to avoid accidental taps)
+const flipBtn = document.getElementById('flipBtn');
+flipBtn.addEventListener('click', ()=>{
+  card.classList.toggle('is-flipped');
+  // reapply transform to include flip state
+  updateCardTransform();
+});
+
+// Rotate handle (touch-friendly): drag the handle to rotate the card
+const rotateHandle = document.getElementById('rotateHandle');
+let isHandleDown = false;
+let handleStartX = 0, handleStartY = 0;
+
+function onHandleDown(e){
+  e.stopPropagation();
+  e.preventDefault && e.preventDefault();
+  isHandleDown = true;
+  const p = e.touches ? e.touches[0] : e;
+  handleStartX = p.clientX; handleStartY = p.clientY;
+  baseRotX = currentRotX; baseRotY = currentRotY;
+}
+
+function onHandleMove(e){
+  if(!isHandleDown) return;
+  e.stopPropagation();
+  const p = e.touches ? e.touches[0] : e;
+  const dx = p.clientX - handleStartX;
+  const dy = p.clientY - handleStartY;
+  currentRotY = baseRotY + dx * 0.18;
+  currentRotX = baseRotX - dy * 0.14;
+  updateCardTransform();
+}
+
+function onHandleUp(e){
+  isHandleDown = false;
+}
+
+rotateHandle.addEventListener('mousedown', onHandleDown);
+document.addEventListener('mousemove', onHandleMove);
+document.addEventListener('mouseup', onHandleUp);
+rotateHandle.addEventListener('touchstart', onHandleDown, {passive:false});
+document.addEventListener('touchmove', onHandleMove, {passive:false});
+document.addEventListener('touchend', onHandleUp);
 
 // initialize SVG stroke animation for draw/erase loop
 (function initSignatureAnimation(){
