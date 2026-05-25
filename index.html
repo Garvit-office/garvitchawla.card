@@ -3,148 +3,219 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Garvit Chawla</title>
+<title>Garvit Chawla Card</title>
 
 <style>
-:root{
-  --glass: rgba(255,255,255,0.18);
-  --border: rgba(255,255,255,0.35);
+:root {
+  --glass: rgba(255,255,255,0.15);
+  --border: rgba(255,255,255,0.25);
   --glow: rgba(124,58,237,0.5);
 }
 
-body{
-  margin:0;
-  height:100vh;
-  font-family:'Inter',sans-serif;
+body {
+  margin: 0;
+  height: 100vh;
   background: linear-gradient(135deg,#eef2ff,#f8fafc);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  overflow:hidden;
+  font-family: 'Inter', sans-serif;
+  overflow: hidden;
 }
 
 /* SPLASH */
-.splash{
-  position:fixed;
-  inset:0;
-  background:#fff;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  z-index:10;
-  animation:fadeOut 1s ease 2s forwards;
+.splash {
+  position: fixed;
+  inset: 0;
+  background: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  animation: fadeOut 1s ease 2.2s forwards;
 }
 
-.splash h1{
-  font-size:40px;
-  letter-spacing:3px;
-  animation:pop 1.2s ease;
+.splash h1 {
+  font-size: 42px;
+  letter-spacing: 3px;
+  animation: pop 1.2s ease;
 }
 
-@keyframes pop{
-  from{transform:scale(0.6);opacity:0}
-  to{transform:scale(1);opacity:1}
+@keyframes pop {
+  from {transform: scale(0.6); opacity:0;}
+  to {transform: scale(1); opacity:1;}
 }
-@keyframes fadeOut{
-  to{opacity:0;visibility:hidden}
+
+@keyframes fadeOut {
+  to {opacity:0; visibility:hidden;}
+}
+
+/* SCENE */
+.scene {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  perspective: 1400px;
+  padding: 20px;
 }
 
 /* CARD */
-.scene{
-  perspective:1400px;
+.card {
+  width: 330px;
+  height: 210px;
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+  transition: transform 280ms cubic-bezier(.2,.8,.2,1);
+  touch-action: none;
+  position: relative;
+  transform-origin: center center;
 }
 
-.card{
-  width:340px;
-  height:215px;
-  border-radius:24px;
-  transform-style:preserve-3d;
-  transition:transform .35s cubic-bezier(.2,.8,.2,1);
-  position:relative;
-  animation:floatCard 4s ease-in-out infinite;
-}
-
-@keyframes floatCard{
-  0%{transform:translateY(0)}
-  50%{transform:translateY(-6px)}
-  100%{transform:translateY(0)}
-}
-
-.side{
-  position:absolute;
-  width:100%;
-  height:100%;
-  border-radius:24px;
-  backdrop-filter:blur(30px);
-  background:var(--glass);
-  border:1px solid var(--border);
+/* SIDES */
+.side {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 22px;
+  backdrop-filter: blur(25px);
+  background: var(--glass);
+  border: 1px solid var(--border);
   box-shadow:
-    0 30px 100px rgba(0,0,0,0.18),
-    inset 0 0 40px rgba(255,255,255,0.25);
-  padding:20px;
-  backface-visibility:hidden;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
+    0 25px 80px rgba(0,0,0,0.15),
+    inset 0 0 30px rgba(255,255,255,0.2);
+  padding: 20px;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-.card.is-flipped{
-  transform:rotateY(180deg);
+/* flipped state (works on both desktop and touch) */
+.card.is-flipped {
+  transform: rotateY(180deg);
 }
 
 /* BACK */
-.back{
-  transform:rotateY(180deg);
-  background:linear-gradient(180deg,#071124,#0b1626);
-  color:#fff;
+.back {
+  transform: rotateY(180deg);
+  /* darker reflective back */
+  background: linear-gradient(180deg, #071124 0%, #0b1626 100%);
+  color: #dfeeff;
+  align-items: center;
 }
+
+.back-inner{width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;position:relative}
+.back-pattern{position:absolute;inset:0;background:repeating-linear-gradient(135deg,rgba(255,255,255,0.02) 0 6px, rgba(255,255,255,0.00) 6px 12px);opacity:0.06;border-radius:22px}
+.back-content{position:relative;padding:14px 18px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);width:86%;text-align:center}
+.contact-card{display:flex;flex-direction:column;gap:6px;color:#b9d4ff;font-size:12.5px;margin-top:6px}
+
+/* SIGNATURE */
+.signature {
+  filter: drop-shadow(0 4px 8px var(--glow));
+}
+
+/* FRONT centering and shine */
+.front{justify-content:center;align-items:center}
+.center-block{display:flex;flex-direction:column;align-items:center;gap:10px}
+.signature{stroke:#000000}
+
+/* stroke overlay for draw/erase animation (keeps filled signature underneath) */
+.signature-stroke{fill:none;stroke:#001f54;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;pointer-events:none;stroke-dasharray:var(--pathLen);stroke-dashoffset:var(--pathLen);}
+.signature-stroke.animate{animation:drawErase 3200ms ease-in-out infinite}
+
+@keyframes drawErase{
+  0%{stroke-dashoffset:var(--pathLen);opacity:1}
+  45%{stroke-dashoffset:0;opacity:1}
+  55%{stroke-dashoffset:0;opacity:1}
+  100%{stroke-dashoffset:calc(var(--pathLen) * -1);opacity:0}
+}
+/* soft pulsing glow around the ink */
+.glow-overlay{stroke:#7ea7ff;stroke-width:6;opacity:0.12;filter:blur(6px);mix-blend-mode:screen;pointer-events:none;transform-origin:center}
+@keyframes pulse {0%{opacity:0.06;transform:scale(1)}50%{opacity:0.18;transform:scale(1.02)}100%{opacity:0.06;transform:scale(1)}}
+.glow-overlay.animate{animation:pulse 2.6s ease-in-out infinite}
+
+/* subtle mirrored reflection */
+.reflection{transform:scaleY(-1);opacity:0.08;filter:blur(3px) saturate(0.8);margin-top:8px}
+@keyframes reflectPulse {0%{opacity:0.06}50%{opacity:0.14}100%{opacity:0.06}}
+.reflection.animate{animation:reflectPulse 2.6s ease-in-out infinite}
 
 /* TEXT */
-.name{
-  font-size:20px;
-  font-weight:700;
-}
-.role{
-  font-size:13px;
-  color:#555;
-  letter-spacing:1px;
+.name {
+  font-size: 18px;
+  font-weight: 600;
 }
 
-/* BUTTON */
-.flip-btn{
-  position:absolute;
-  bottom:12px;
-  left:50%;
-  transform:translateX(-50%);
-  padding:8px 14px;
-  border-radius:12px;
-  backdrop-filter:blur(10px);
-  background:rgba(255,255,255,0.2);
-  border:1px solid rgba(255,255,255,0.3);
-  font-size:13px;
+.role {
+  font-size: 13px;
+  color: #444;
 }
 
-/* MOBILE HINT */
+.contact {
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* GLOW EFFECT */
+.card::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 22px;
+  background: radial-gradient(circle, var(--glow), transparent 70%);
+  opacity: 0.15;
+  z-index: -1;
+}
+
+/* rotate handle visible on touch devices */
+.rotate-handle{
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  font-size:18px;
+  user-select:none;
+  -webkit-user-select:none;
+  touch-action:none;
+}
+
+@media (hover: hover) and (pointer: fine){
+  .rotate-handle{ display:none; }
+}
+
+/* mobile first-time hint */
 .mobile-hint{
-  position:absolute;
-  bottom:80px;
-  left:50%;
-  transform:translateX(-50%);
-  background:rgba(0,0,0,0.6);
-  color:#fff;
-  padding:10px 14px;
-  border-radius:10px;
-  font-size:13px;
-  opacity:0;
-  transition:0.3s;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 78px;
+  max-width: 86%;
+  background: linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.45));
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  text-align: center;
+  z-index: 40;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+  opacity: 0;
+  transition: opacity 220ms ease, transform 220ms ease;
+  pointer-events: auto;
 }
-.mobile-hint.show{opacity:1}
+.mobile-hint.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.mobile-hint .hint-close{margin-left:8px;background:transparent;border:0;color:#fff;font-weight:600}
 </style>
 </head>
-
+<center>
 <body>
 
+<!-- SPLASH -->
 <div class="splash">
   <h1>GARVIT CHAWLA</h1>
 </div>
@@ -154,120 +225,234 @@ body{
 
     <!-- FRONT -->
     <div class="side front">
-      <h2 class="name">Garvit Chawla</h2>
-      <p class="role">Full Stack Developer</p>
 
-      <button class="flip-btn" id="flipBtn">Flip</button>
+      <!-- YOUR REAL SIGNATURE -->
+      <svg viewBox="0 0 496 464" width="180" style="display:block;margin:0 auto">
+          
+        />
+        <!-- stroke overlay for animated draw/erase -->
+        <path class="signature-stroke"
+          d="M308.943665,208.876541 C313.249847,208.762131 316.094452,210.746826 318.127960,213.746735 C319.965973,216.458237 319.175140,218.934799 315.755798,219.042496 C306.693909,219.327850 298.007599,221.729919 289.146667,223.134155 C285.456421,223.718979 283.653259,224.674316 282.411133,229.038055 C280.155121,236.963654 276.308014,244.445068 274.046844,252.485916 C269.682922,268.004272 265.036102,283.442963 260.564362,298.931335 C260.050720,300.710358 260.147125,302.492004 261.325470,304.178650 C262.060730,305.231018 262.745270,306.570770 262.787567,307.804352 C262.883453,310.601562 263.045471,313.815277 260.038269,315.275024 C257.061798,316.719788 254.849701,314.365570 253.201492,312.446472 C249.971222,308.685333 247.989838,304.434967 249.478409,299.134430 C253.793213,283.770203 257.980377,268.369781 262.144867,252.963913 C262.871368,250.276291 263.244080,247.493011 263.958313,243.843857 C257.203735,247.624298 252.756210,252.783707 247.594482,256.990082 C239.197815,263.832703 230.945572,270.827362 221.514938,276.260132 C216.126312,279.364410 210.494949,281.640625 204.246048,282.427948 C192.888000,283.859009 182.925720,273.472351 185.149689,262.177979 C187.862640,248.400330 194.545578,236.261810 201.272141,224.176392 C213.694809,201.856934 227.907135,180.762558 244.436646,161.247238 C248.553680,156.386536 253.080933,152.513535 259.756256,151.954803 C262.658752,151.711853 265.377197,151.982803 267.926971,153.539078 C269.945129,154.770889 271.257111,156.442337 270.975830,158.819702 C270.683350,161.291840 268.449585,160.924225 266.713898,161.349213 C261.873383,162.534409 258.023834,165.329697 254.600540,168.891312 C241.131042,182.905106 230.539688,199.027405 220.166779,215.340988 C211.830948,228.450806 205.467529,242.483551 200.043106,256.971161 C198.595718,260.836884 197.531891,264.870453 196.604416,268.898865 C195.873260,272.074554 196.594055,274.055084 200.743820,273.273895 C205.575745,272.364319 210.016052,270.667511 214.227097,268.244934 C230.253784,259.024963 243.633408,246.491913 257.031525,233.985870 C257.621948,233.434723 258.280487,232.842361 257.780914,231.176544 C253.479630,232.699158 249.114243,234.037918 244.922806,235.792236 C241.441284,237.249405 238.632446,237.133942 237.111603,233.362457 C235.592285,229.594742 237.080826,227.078537 240.850723,225.511612 C257.401428,218.632492 274.822449,215.050201 292.317993,211.737961 C297.705139,210.718048 303.118317,209.835541 308.943665,208.876541 Z" />
+      </svg>
+
+      <div>
+        <div class="name">Garvit Chawla</div>
+        <div class="role">Full Stack Developer</div>
+      </div>
+
     </div>
 
     <!-- BACK -->
     <div class="side back">
-      <h3>Garvit Chawla</h3>
-      <p>Full Stack Developer</p>
-      <p>📧 garvitchawla.office@gmail.com</p>
-      <p>📞 +91 9660665666</p>
-      <p>🔗 github.com/garvit0080</p>
+      <div class="back-inner">
+        <div class="back-pattern" aria-hidden="true"></div>
+        <div class="back-content">
+          <h3 style="margin:0;color:#dfeeff">Garvit Chawla</h3>
+          <p style="margin:6px 0 12px;color:#9fb0cf;font-size:13px">Full Stack Developer</p>
+          <div class="contact-card">
+            <div>📧 garvitchawla.office@gmail.com</div>
+            <div>📞 +91 9660665666</div>
+            <div>🔗 github.com/garvit0080</div>
+            <div>🔗 linkedin.com/in/garvit-chawla</div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="mobile-hint" id="hint">
-      Swipe / Tap to interact
-    </div>
+      <!-- UI: rotate handle (flip button moved inside front) -->
+      <div class="rotate-handle" id="rotateHandle" aria-hidden="true">⤾</div>
+
+      <div class="mobile-hint" id="mobileHint" role="status" aria-live="polite">
+        Drag the round handle to rotate. Double-tap the card to flip.
+        <button class="hint-close" id="hintClose">Got it</button>
+      </div>
 
   </div>
 </div>
 
 <script>
 const card = document.getElementById("card");
+
+/* Pointer-controlled rotation (no inertia): click/touch and drag to rotate; stops on release */
+let isPointerDown = false;
+let startX = 0, startY = 0;
+let baseRotX = 0, baseRotY = 0;
+let pointerDownTime = 0;
+let movedDuringPointer = false;
+let pointerStartedInsideCard = false;
+let lastTapTime = 0;
+// track current rotation so inline transforms can be combined with flip
 let currentRotX = 0, currentRotY = 0;
 
-/* UPDATE TRANSFORM */
-function update(){
-  const flip = card.classList.contains("is-flipped") ? "rotateY(180deg)" : "";
-  card.style.transform = `${flip} rotateX(${currentRotX}deg) rotateY(${currentRotY}deg)`;
+function flipCard(){
+  card.classList.toggle('is-flipped');
+  updateCardTransform();
+  hideHint(true);
 }
 
-/* TAP TILT */
-document.addEventListener("click", e=>{
-  const rect = card.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
+function updateCardTransform(){
+  const flipPrefix = card.classList.contains('is-flipped') ? 'rotateY(180deg) ' : '';
+  card.style.transform = `${flipPrefix}rotateX(${currentRotX}deg) rotateY(${currentRotY}deg)`;
+}
 
-  const cx = rect.width/2;
-  const cy = rect.height/2;
+function onPointerDown(e){
+  isPointerDown = true;
+  const p = e.touches ? e.touches[0] : e;
+  startX = p.clientX; startY = p.clientY;
+  movedDuringPointer = false;
+  pointerStartedInsideCard = card.contains(e.target);
+  pointerDownTime = Date.now();
+  // use current rotation as base so rotations are preserved
+  baseRotX = currentRotX; baseRotY = currentRotY;
+}
 
-  currentRotY = (x-cx)/cx*10;
-  currentRotX = (cy-y)/cy*10;
-  update();
+function onPointerMove(e){
+  if(!isPointerDown) return;
+  const p = e.touches ? e.touches[0] : e;
+  const dx = p.clientX - startX;
+  const dy = p.clientY - startY;
+  if(Math.hypot(dx, dy) > 6) movedDuringPointer = true;
+  const rotY = baseRotY + dx * 0.15; // sensitivity
+  const rotX = baseRotX - dy * 0.12;
+  currentRotX = rotX; currentRotY = rotY;
+  updateCardTransform();
+}
 
-  setTimeout(()=>{
-    currentRotX=0;
-    currentRotY=0;
-    update();
-  },700);
-});
+function onPointerUp(){
+  const duration = Date.now() - pointerDownTime;
+  // Double-click/double-tap anywhere on card flips it. Dragging remains unaffected.
+  if(pointerStartedInsideCard && !movedDuringPointer && duration < 260){
+    const now = Date.now();
+    if(now - lastTapTime < 320){
+      flipCard();
+      lastTapTime = 0;
+    }else{
+      lastTapTime = now;
+    }
+  }
+  isPointerDown = false;
+}
 
-/* DRAG ROTATE */
-let startX,startY,isDown=false;
+// mouse
+document.addEventListener('mousedown', onPointerDown);
+document.addEventListener('mousemove', onPointerMove);
+document.addEventListener('mouseup', onPointerUp);
+// touch
+document.addEventListener('touchstart', onPointerDown, {passive:true});
+document.addEventListener('touchmove', onPointerMove, {passive:true});
+document.addEventListener('touchend', onPointerUp);
 
-document.addEventListener("mousedown",e=>{
-  isDown=true;
-  startX=e.clientX;
-  startY=e.clientY;
-});
+function resetCard(){
+  currentRotX = 0; currentRotY = 0;
+  card.classList.remove('is-flipped');
+  updateCardTransform();
+  try{ navigator.vibrate && navigator.vibrate(10); }catch(e){}
+}
+// (Reset button removed from UI; keyboard still calls resetCard)
 
-document.addEventListener("mousemove",e=>{
-  if(!isDown) return;
-  currentRotY += (e.clientX-startX)*0.05;
-  currentRotX -= (e.clientY-startY)*0.05;
-  startX=e.clientX;
-  startY=e.clientY;
-  update();
-});
-
-document.addEventListener("mouseup",()=>{
-  isDown=false;
-  currentRotX*=0.4;
-  currentRotY*=0.4;
-  update();
-
-  setTimeout(()=>{
-    currentRotX=0;
-    currentRotY=0;
-    update();
-  },300);
-});
-
-/* SWIPE FLIP */
-let swipeStart=0;
-
-document.addEventListener("touchstart",e=>{
-  swipeStart=e.touches[0].clientX;
-});
-
-document.addEventListener("touchend",e=>{
-  let diff=e.changedTouches[0].clientX-swipeStart;
-  if(Math.abs(diff)>80){
-    card.classList.toggle("is-flipped");
-    update();
-    navigator.vibrate && navigator.vibrate(15);
+// Keyboard accessibility: Space/Enter flip, arrows rotate, R/Escape reset
+document.addEventListener('keydown', (ev)=>{
+  const key = ev.key;
+  if(key === ' ' || key === 'Spacebar' || key === 'Enter'){
+    ev.preventDefault();
+    flipCard();
+    try{ navigator.vibrate && navigator.vibrate(10); }catch(e){}
+    return;
+  }
+  if(key === 'Escape' || key.toLowerCase() === 'r'){
+    resetCard();
+    return;
+  }
+  const step = 6; // degrees per arrow
+  if(key === 'ArrowLeft'){
+    currentRotY -= step; updateCardTransform();
+  }else if(key === 'ArrowRight'){
+    currentRotY += step; updateCardTransform();
+  }else if(key === 'ArrowUp'){
+    currentRotX = Math.max(-90, currentRotX - step); updateCardTransform();
+  }else if(key === 'ArrowDown'){
+    currentRotX = Math.min(90, currentRotX + step); updateCardTransform();
   }
 });
 
-/* BUTTON FLIP */
-document.getElementById("flipBtn").onclick=()=>{
-  card.classList.toggle("is-flipped");
-  update();
-  navigator.vibrate && navigator.vibrate(10);
-};
+// Rotate handle (touch-friendly): drag the handle to rotate the card
+const rotateHandle = document.getElementById('rotateHandle');
+let isHandleDown = false;
+let handleStartX = 0, handleStartY = 0;
 
-/* HINT */
-const hint=document.getElementById("hint");
-if(!localStorage.getItem("seen")){
-  setTimeout(()=>hint.classList.add("show"),500);
-  setTimeout(()=>hint.classList.remove("show"),4000);
-  localStorage.setItem("seen","1");
+function onHandleDown(e){
+  e.stopPropagation();
+  e.preventDefault && e.preventDefault();
+  isHandleDown = true;
+  const p = e.touches ? e.touches[0] : e;
+  handleStartX = p.clientX; handleStartY = p.clientY;
+  baseRotX = currentRotX; baseRotY = currentRotY;
 }
+
+function onHandleMove(e){
+  if(!isHandleDown) return;
+  e.stopPropagation();
+  const p = e.touches ? e.touches[0] : e;
+  const dx = p.clientX - handleStartX;
+  const dy = p.clientY - handleStartY;
+  currentRotY = baseRotY + dx * 0.18;
+  currentRotX = baseRotX - dy * 0.14;
+  updateCardTransform();
+}
+
+function onHandleUp(e){
+  isHandleDown = false;
+}
+
+rotateHandle.addEventListener('mousedown', onHandleDown);
+document.addEventListener('mousemove', onHandleMove);
+document.addEventListener('mouseup', onHandleUp);
+rotateHandle.addEventListener('touchstart', onHandleDown, {passive:false});
+document.addEventListener('touchmove', onHandleMove, {passive:false});
+document.addEventListener('touchend', onHandleUp);
+
+// Mobile hint: show once for touch devices, persist dismissal in localStorage
+const mobileHint = document.getElementById('mobileHint');
+const hintClose = document.getElementById('hintClose');
+function hideHint(persist=true){
+  if(!mobileHint) return;
+  mobileHint.classList.remove('show');
+  if(persist) try{ localStorage.setItem('cardHintSeen','1') }catch(e){}
+}
+
+function showHintIfNeeded(){
+  const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+  if(!isTouch || !mobileHint) return;
+  const seen = (()=>{try{return localStorage.getItem('cardHintSeen')}catch(e){return null}})();
+  if(seen) return;
+  // show after tiny delay so UI is ready
+  setTimeout(()=> mobileHint.classList.add('show'), 600);
+  // auto-hide after 6s
+  setTimeout(()=> hideHint(false), 6000);
+}
+
+hintClose && hintClose.addEventListener('click', ()=> hideHint(true));
+// hide when user interacts with controls
+rotateHandle && rotateHandle.addEventListener('touchstart', ()=> hideHint(true), {passive:true});
+showHintIfNeeded();
+
+// initialize SVG stroke animation for draw/erase loop
+(function initSignatureAnimation(){
+  const strokes = document.querySelectorAll('.signature-stroke');
+  strokes.forEach(p=>{
+    try{
+      const len = p.getTotalLength();
+      p.style.setProperty('--pathLen', len + 'px');
+      p.style.strokeDasharray = len;
+      p.style.strokeDashoffset = len;
+      // trigger layout then start animation
+      void p.getBoundingClientRect();
+      p.classList.add('animate');
+    }catch(e){console.warn('SVG path length unavailable', e)}
+  });
+})();
 </script>
 
 </body>
+</center>
 </html>
