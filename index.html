@@ -7,17 +7,32 @@
 
 <style>
 :root {
+  --bg1: #eef2ff;
+  --bg2: #f8fafc;
   --glass: rgba(255,255,255,0.15);
   --border: rgba(255,255,255,0.25);
   --glow: rgba(124,58,237,0.5);
+  --accent: #06b6d4; /* portfolio accent (sky/cyan) */
+  --accent-opaque: rgba(6,182,212,0.06);
+  --text-main: #0f172a;
 }
 
 body {
   margin: 0;
   height: 100vh;
-  background: linear-gradient(135deg,#eef2ff,#f8fafc);
+  background: linear-gradient(135deg, var(--bg1), var(--bg2));
   font-family: 'Inter', sans-serif;
   overflow: hidden;
+  color: var(--text-main);
+}
+
+body.dark {
+  --bg1: #0b1020;
+  --bg2: #111827;
+  --glass: rgba(20,28,45,0.6);
+  --border: rgba(148,163,184,0.25);
+  --glow: rgba(56,189,248,0.45);
+  --text-main: #e5e7eb;
 }
 
 /* SPLASH */
@@ -49,12 +64,14 @@ body {
 
 /* SCENE */
 .scene {
-  min-height: 100vh;
+  position: fixed;
+  inset: 0;
   display: flex;
   justify-content: center;
   align-items: center;
   perspective: 1400px;
   padding: 20px;
+  box-sizing: border-box;
 }
 
 /* CARD */
@@ -97,16 +114,19 @@ body {
 /* BACK */
 .back {
   transform: rotateY(180deg);
-  /* darker reflective back */
-  background: linear-gradient(180deg, #071124 0%, #0b1626 100%);
-  color: #dfeeff;
+  /* white-style back */
+  background: #ffffff;
+  color: var(--text-main);
   align-items: center;
+  border: 1px solid rgba(15,23,42,0.06);
+  box-shadow: 0 12px 36px rgba(12,20,30,0.06);
 }
 
 .back-inner{width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;position:relative}
-.back-pattern{position:absolute;inset:0;background:repeating-linear-gradient(135deg,rgba(255,255,255,0.02) 0 6px, rgba(255,255,255,0.00) 6px 12px);opacity:0.06;border-radius:22px}
-.back-content{position:relative;padding:14px 18px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);width:86%;text-align:center}
-.contact-card{display:flex;flex-direction:column;gap:6px;color:#b9d4ff;font-size:12.5px;margin-top:6px}
+.back-pattern{position:absolute;inset:0;background:repeating-linear-gradient(135deg,rgba(255,255,255,0.02) 0 6px, rgba(255,255,255,0.00) 6px 12px);opacity:0.04;border-radius:22px}
+.back-content{position:relative;padding:18px;border-radius:14px;background:#fff;border:1px solid var(--accent-opaque);width:100%;height:100%;box-sizing:border-box;text-align:center}
+.contact-card{display:flex;flex-direction:column;gap:6px;color:var(--text-main);font-size:12.5px;margin-top:6px}
+body.dark .back-content{background:#ffffff; color:var(--text-main)}
 
 /* SIGNATURE */
 .signature {
@@ -176,8 +196,8 @@ body {
   display:flex;
   align-items:center;
   justify-content:center;
-  background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(15,23,42,0.04);
+  border: 1px solid rgba(15,23,42,0.06);
   box-shadow: 0 6px 18px rgba(0,0,0,0.12);
   font-size:18px;
   user-select:none;
@@ -210,9 +230,62 @@ body {
 }
 .mobile-hint.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .mobile-hint .hint-close{margin-left:8px;background:transparent;border:0;color:#fff;font-weight:600}
+
+.copy-item{
+  cursor:pointer;
+  border:1px solid rgba(15,23,42,0.06);
+  border-radius:8px;
+  padding:6px 8px;
+  background:#f8fafc;
+  color:var(--text-main);
+  text-align:left;
+  font-size:12.5px;
+}
+
+.copy-item.copied{
+  background:rgba(56,189,248,0.18);
+}
+
+
+
+.extras-row{
+  margin-top:10px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:12px;
+}
+
+/* QR removed - using vCard button only */
+
+.vcard-btn{
+  border:1px solid var(--accent-opaque);
+  border-radius:10px;
+  padding:8px 10px;
+  font-size:12px;
+  color:var(--text-main);
+  background: rgba(6,182,212,0.08);
+  cursor:pointer;
+}
+
+.social-link{
+  display:inline-block;
+  border:1px solid var(--accent-opaque);
+  border-radius:10px;
+  padding:8px 10px;
+  font-size:12px;
+  color:var(--text-main);
+  background:transparent;
+  text-decoration:none;
+}
+
+.theme-toggle{display:none}
 </style>
+  <!-- PWA manifest and theme -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#06b6d4">
+  <link rel="icon" href="icons/icon.svg">
 </head>
-<center>
 <body>
 
 <!-- SPLASH -->
@@ -237,7 +310,7 @@ body {
 
       <div>
         <div class="name">Garvit Chawla</div>
-        <div class="role">Full Stack Developer</div>
+        <div class="role">Software Developer</div>
       </div>
 
     </div>
@@ -247,20 +320,29 @@ body {
       <div class="back-inner">
         <div class="back-pattern" aria-hidden="true"></div>
         <div class="back-content">
-          <h3 style="margin:0;color:#dfeeff">Garvit Chawla</h3>
-          <p style="margin:6px 0 12px;color:#9fb0cf;font-size:13px">Full Stack Developer</p>
+          <h3 style="margin:0;color:var(--text-main)">Garvit Chawla</h3>
+          <p style="margin:6px 0 12px;color:#6b7280;font-size:13px"Software Developer</p>
           <div class="contact-card">
-            <div>📧 garvitchawla.office@gmail.com</div>
-            <div>📞 +91 9660665666</div>
-            <div>🔗 github.com/garvit0080</div>
-            <div>🔗 linkedin.com/in/garvit-chawla</div>
+            <button class="copy-item" data-copy="garvitchawla.office@gmail.com">Email: garvitchawla.office@gmail.com</button>
+            <button class="copy-item" data-copy="+919660665666">Phone: +91 9660665666</button>
+                       <button class="copy-item" data-copy="https://linkedin.com/in/garvit-chawla">LinkedIn: linkedin.com/in/garvit-chawla</button>
+          </div>
+
+          
+
+          <div class="extras-row">
+            <a class="social-link" href="https://garvit-web.vercel.app/" target="_blank" rel="noopener noreferrer" aria-label="Open portfolio">garvit.web</a>
+            <button class="vcard-btn" id="downloadVcard" aria-label="Download vCard">Download vCard</button>
           </div>
         </div>
+
+          <!-- Add to Home Screen button (shown when install prompt available) -->
+          <button id="installBtn" style="position:fixed;right:14px;bottom:14px;z-index:60;display:none;border-radius:10px;padding:8px 10px;border:1px solid var(--accent-opaque);background:var(--accent);color:#fff;font-size:13px;box-shadow:0 6px 18px rgba(0,0,0,0.12);">Add to Home Screen</button>
       </div>
     </div>
 
       <!-- UI: rotate handle (flip button moved inside front) -->
-      <div class="rotate-handle" id="rotateHandle" aria-hidden="true">⤾</div>
+      <div class="rotate-handle" id="rotateHandle" aria-hidden="true">Rotate</div>
 
       <div class="mobile-hint" id="mobileHint" role="status" aria-live="polite">
         Drag the round handle to rotate. Double-tap the card to flip.
@@ -436,6 +518,74 @@ hintClose && hintClose.addEventListener('click', ()=> hideHint(true));
 rotateHandle && rotateHandle.addEventListener('touchstart', ()=> hideHint(true), {passive:true});
 showHintIfNeeded();
 
+// Dark mode removed — UI is now single-theme
+
+// Tap-to-copy for contact rows
+function copyText(text){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    return navigator.clipboard.writeText(text);
+  }
+  return new Promise((resolve, reject)=>{
+    try{
+      const t = document.createElement('textarea');
+      t.value = text;
+      document.body.appendChild(t);
+      t.select();
+      document.execCommand('copy');
+      document.body.removeChild(t);
+      resolve();
+    }catch(e){ reject(e); }
+  });
+}
+
+document.querySelectorAll('.copy-item').forEach((el)=>{
+  el.addEventListener('click', async ()=>{
+    const value = el.getAttribute('data-copy') || '';
+    try{
+      await copyText(value);
+      const old = el.textContent;
+      el.classList.add('copied');
+      el.textContent = 'Copied';
+      setTimeout(()=>{
+        el.classList.remove('copied');
+        el.textContent = old;
+      }, 900);
+    }catch(e){
+      console.warn('Copy failed', e);
+    }
+  });
+});
+
+
+// QR code + vCard download
+// QR generation removed
+
+const vcardBtn = document.getElementById('downloadVcard');
+vcardBtn && vcardBtn.addEventListener('click', ()=>{
+  const vcf = [
+    'BEGIN:VCARD',
+    'VERSION:3.0',
+    'FN:Garvit Chawla',
+    'TITLE:Full Stack Developer',
+    'EMAIL;TYPE=INTERNET:garvitchawla.office@gmail.com',
+    'TEL;TYPE=CELL:+919660665666',
+    
+    'URL:https://linkedin.com/in/garvit-chawla',
+    'END:VCARD'
+  ].join('\n');
+
+  const blob = new Blob([vcf], { type: 'text/vcard;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'garvit-chawla.vcf';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+
+
 // initialize SVG stroke animation for draw/erase loop
 (function initSignatureAnimation(){
   const strokes = document.querySelectorAll('.signature-stroke');
@@ -451,8 +601,44 @@ showHintIfNeeded();
     }catch(e){console.warn('SVG path length unavailable', e)}
   });
 })();
+
+// --- PWA: Service Worker registration + install prompt handling ---
+let deferredPrompt = null;
+const installBtn = document.getElementById('installBtn');
+
+// Register service worker if supported
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('service-worker.js')
+    .then(reg=>console.log('ServiceWorker registered', reg.scope))
+    .catch(err=>console.warn('SW register failed', err));
+}
+
+window.addEventListener('beforeinstallprompt', (e)=>{
+  e.preventDefault();
+  deferredPrompt = e; // save for later
+  // show install UI
+  if(installBtn){
+    installBtn.style.display = 'block';
+  }
+});
+
+installBtn && installBtn.addEventListener('click', async ()=>{
+  if(!deferredPrompt) return;
+  installBtn.style.display = 'none';
+  deferredPrompt.prompt();
+  const choice = await deferredPrompt.userChoice;
+  if(choice && choice.outcome){
+    console.log('User choice:', choice.outcome);
+  }
+  deferredPrompt = null;
+});
+
+// optional: show offline notice when navigator goes offline
+window.addEventListener('offline', ()=>{
+  console.log('Offline mode');
+});
+</script>
 </script>
 
 </body>
-</center>
 </html>
