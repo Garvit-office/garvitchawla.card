@@ -200,6 +200,28 @@ body {
 @media (hover: hover) and (pointer: fine){
   .rotate-handle{ display:none; }
 }
+
+/* mobile first-time hint */
+.mobile-hint{
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 78px;
+  max-width: 86%;
+  background: linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.45));
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  text-align: center;
+  z-index: 40;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+  opacity: 0;
+  transition: opacity 220ms ease, transform 220ms ease;
+  pointer-events: auto;
+}
+.mobile-hint.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.mobile-hint .hint-close{margin-left:8px;background:transparent;border:0;color:#fff;font-weight:600}
 </style>
 </head>
 
@@ -252,6 +274,11 @@ body {
       <!-- UI: flip button + rotate handle -->
       <button class="flip-btn" id="flipBtn" aria-label="Flip card">Flip</button>
       <div class="rotate-handle" id="rotateHandle" aria-hidden="true">⤾</div>
+
+      <div class="mobile-hint" id="mobileHint" role="status" aria-live="polite">
+        Drag the round handle to rotate. Tap <strong>Flip</strong> to see contact info.
+        <button class="hint-close" id="hintClose">Got it</button>
+      </div>
 
   </div>
 </div>
@@ -355,6 +382,32 @@ document.addEventListener('mouseup', onHandleUp);
 rotateHandle.addEventListener('touchstart', onHandleDown, {passive:false});
 document.addEventListener('touchmove', onHandleMove, {passive:false});
 document.addEventListener('touchend', onHandleUp);
+
+// Mobile hint: show once for touch devices, persist dismissal in localStorage
+const mobileHint = document.getElementById('mobileHint');
+const hintClose = document.getElementById('hintClose');
+function hideHint(persist=true){
+  if(!mobileHint) return;
+  mobileHint.classList.remove('show');
+  if(persist) try{ localStorage.setItem('cardHintSeen','1') }catch(e){}
+}
+
+function showHintIfNeeded(){
+  const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+  if(!isTouch || !mobileHint) return;
+  const seen = (()=>{try{return localStorage.getItem('cardHintSeen')}catch(e){return null}})();
+  if(seen) return;
+  // show after tiny delay so UI is ready
+  setTimeout(()=> mobileHint.classList.add('show'), 600);
+  // auto-hide after 6s
+  setTimeout(()=> hideHint(false), 6000);
+}
+
+hintClose && hintClose.addEventListener('click', ()=> hideHint(true));
+// hide when user interacts with controls
+rotateHandle && rotateHandle.addEventListener('touchstart', ()=> hideHint(true), {passive:true});
+flipBtn && flipBtn.addEventListener('click', ()=> hideHint(true));
+showHintIfNeeded();
 
 // initialize SVG stroke animation for draw/erase loop
 (function initSignatureAnimation(){
