@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Garvit Chawla Card</title>
+<title>Garvit Signature Card</title>
 
 <style>
 :root {
@@ -60,10 +60,8 @@ body {
 .card {
   width: 330px;
   height: 210px;
-  -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
-  transition: transform 280ms cubic-bezier(.2,.8,.2,1);
-  touch-action: none;
+  transition: transform 0.1s linear;
 }
 
 /* SIDES */
@@ -79,16 +77,10 @@ body {
     0 25px 80px rgba(0,0,0,0.15),
     inset 0 0 30px rgba(255,255,255,0.2);
   padding: 20px;
-  -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-}
-
-/* flipped state (works on both desktop and touch) */
-.card.is-flipped {
-  transform: rotateY(180deg);
 }
 
 /* BACK */
@@ -113,17 +105,53 @@ body {
 /* FRONT centering and shine */
 .front{justify-content:center;align-items:center}
 .center-block{display:flex;flex-direction:column;align-items:center;gap:10px}
-.signature{stroke:#000000}
+.signature{stroke:#001f54}
 
 /* stroke overlay for draw/erase animation (keeps filled signature underneath) */
-.signature-stroke{fill:none;stroke:#001f54;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;pointer-events:none;stroke-dasharray:var(--pathLen);stroke-dashoffset:var(--pathLen);}
-.signature-stroke.animate{animation:drawErase 3200ms ease-in-out infinite}
+.signature-stroke{
+  fill:none;
+  /* hand-written ink: same navy, slightly translucent, thin blur for softness */
+  stroke:#001f54;
+  stroke-opacity:0.88;
+  stroke-width:3;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  pointer-events:none;
+  will-change: stroke-dashoffset, opacity;
+  /* subtle blur to emulate wet ink edge */
+  filter: blur(0.6px);
+  /* keep normal blend so underlying fill remains visible */
+  mix-blend-mode: normal;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray:var(--pathLen);
+  stroke-dashoffset:var(--pathLen);
+}
+.signature-stroke.animate{
+  animation-name: drawErase;
+  animation-duration: 3800ms;
+  animation-timing-function: cubic-bezier(.22,.9,.3,1);
+  animation-iteration-count: infinite;
+}
 
 @keyframes drawErase{
-  0%{stroke-dashoffset:var(--pathLen);opacity:1}
-  45%{stroke-dashoffset:0;opacity:1}
-  55%{stroke-dashoffset:0;opacity:1}
-  100%{stroke-dashoffset:calc(var(--pathLen) * -1);opacity:0}
+  0%{
+    stroke-dashoffset:var(--pathLen);
+    opacity:0;
+  }
+  8%{opacity:0.85}
+  45%{
+    stroke-dashoffset:0;
+    opacity:1;
+  }
+  60%{opacity:0.95}
+  90%{
+    stroke-dashoffset:var(--pathLen);
+    opacity:0.08;
+  }
+  100%{
+    stroke-dashoffset:var(--pathLen);
+    opacity:0;
+  }
 }
 /* soft pulsing glow around the ink */
 .glow-overlay{stroke:#7ea7ff;stroke-width:6;opacity:0.12;filter:blur(6px);mix-blend-mode:screen;pointer-events:none;transform-origin:center}
@@ -168,7 +196,7 @@ body {
 
 <!-- SPLASH -->
 <div class="splash">
-  <h1>GARVIT CHAWLA</h1>
+  <h1>GARVIT</h1>
 </div>
 
 <div class="scene">
@@ -179,7 +207,9 @@ body {
 
       <!-- YOUR REAL SIGNATURE -->
       <svg viewBox="0 0 496 464" width="180" style="display:block;margin:0 auto">
-          
+        <path class="signature"
+          d="M308.943665,208.876541 C313.249847,208.762131 316.094452,210.746826 318.127960,213.746735 C319.965973,216.458237 319.175140,218.934799 315.755798,219.042496 C306.693909,219.327850 298.007599,221.729919 289.146667,223.134155 C285.456421,223.718979 283.653259,224.674316 282.411133,229.038055 C280.155121,236.963654 276.308014,244.445068 274.046844,252.485916 C269.682922,268.004272 265.036102,283.442963 260.564362,298.931335 C260.050720,300.710358 260.147125,302.492004 261.325470,304.178650 C262.060730,305.231018 262.745270,306.570770 262.787567,307.804352 C262.883453,310.601562 263.045471,313.815277 260.038269,315.275024 C257.061798,316.719788 254.849701,314.365570 253.201492,312.446472 C249.971222,308.685333 247.989838,304.434967 249.478409,299.134430 C253.793213,283.770203 257.980377,268.369781 262.144867,252.963913 C262.871368,250.276291 263.244080,247.493011 263.958313,243.843857 C257.203735,247.624298 252.756210,252.783707 247.594482,256.990082 C239.197815,263.832703 230.945572,270.827362 221.514938,276.260132 C216.126312,279.364410 210.494949,281.640625 204.246048,282.427948 C192.888000,283.859009 182.925720,273.472351 185.149689,262.177979 C187.862640,248.400330 194.545578,236.261810 201.272141,224.176392 C213.694809,201.856934 227.907135,180.762558 244.436646,161.247238 C248.553680,156.386536 253.080933,152.513535 259.756256,151.954803 C262.658752,151.711853 265.377197,151.982803 267.926971,153.539078 C269.945129,154.770889 271.257111,156.442337 270.975830,158.819702 C270.683350,161.291840 268.449585,160.924225 266.713898,161.349213 C261.873383,162.534409 258.023834,165.329697 254.600540,168.891312 C241.131042,182.905106 230.539688,199.027405 220.166779,215.340988 C211.830948,228.450806 205.467529,242.483551 200.043106,256.971161 C198.595718,260.836884 197.531891,264.870453 196.604416,268.898865 C195.873260,272.074554 196.594055,274.055084 200.743820,273.273895 C205.575745,272.364319 210.016052,270.667511 214.227097,268.244934 C230.253784,259.024963 243.633408,246.491913 257.031525,233.985870 C257.621948,233.434723 258.280487,232.842361 257.780914,231.176544 C253.479630,232.699158 249.114243,234.037918 244.922806,235.792236 C241.441284,237.249405 238.632446,237.133942 237.111603,233.362457 C235.592285,229.594742 237.080826,227.078537 240.850723,225.511612 C257.401428,218.632492 274.822449,215.050201 292.317993,211.737961 C297.705139,210.718048 303.118317,209.835541 308.943665,208.876541 Z"
+          fill="#001f54"
         />
         <!-- stroke overlay for animated draw/erase -->
         <path class="signature-stroke"
@@ -220,15 +250,11 @@ const card = document.getElementById("card");
 let isPointerDown = false;
 let startX = 0, startY = 0;
 let baseRotX = 0, baseRotY = 0;
-let pointerDownTime = 0;
-let movedDuringPointer = false;
 
 function onPointerDown(e){
   isPointerDown = true;
   const p = e.touches ? e.touches[0] : e;
   startX = p.clientX; startY = p.clientY;
-  movedDuringPointer = false;
-  pointerDownTime = Date.now();
   // read current rotation from transform if present
   const style = getComputedStyle(card).transform;
   baseRotX = 0; baseRotY = 0;
@@ -243,18 +269,12 @@ function onPointerMove(e){
   const p = e.touches ? e.touches[0] : e;
   const dx = p.clientX - startX;
   const dy = p.clientY - startY;
-  if(Math.hypot(dx, dy) > 6) movedDuringPointer = true;
   const rotY = baseRotY + dx * 0.15; // sensitivity
   const rotX = baseRotX - dy * 0.12;
   card.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
 }
 
 function onPointerUp(){
-  const duration = Date.now() - pointerDownTime;
-  // treat as a tap if short and there was little movement
-  if(!movedDuringPointer && duration < 300){
-    card.classList.toggle('is-flipped');
-  }
   isPointerDown = false;
 }
 
